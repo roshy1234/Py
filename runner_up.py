@@ -1,4 +1,4 @@
-n = int(input())
+n = int(input('Enter the no. of elements in array : '))
 arr = set((map(int, input().split())))
 a = sorted(arr)
-print(a[-2])
+print(f'The runner up is : {a[-2]}')

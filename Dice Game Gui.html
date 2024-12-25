@@ -1,0 +1,148 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dice Rolling Game</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            text-align: center;
+            background-color: #f4f4f9;
+            margin: 0;
+            padding: 0;
+        }
+
+        .container {
+            max-width: 600px;
+            margin: 50px auto;
+            padding: 20px;
+            background: #ffffff;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+            border-radius: 10px;
+        }
+
+        h1 {
+            color: #333;
+        }
+
+        .button {
+            display: inline-block;
+            margin: 10px;
+            padding: 10px 20px;
+            background-color: #007BFF;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+
+        .button:hover {
+            background-color: #0056b3;
+        }
+
+        .scoreboard {
+            margin-top: 20px;
+            padding: 10px;
+            background-color: #f9f9f9;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+        }
+
+        .hidden {
+            display: none;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Dice Rolling Game</h1>
+        <div id="setup">
+            <label for="numPlayers">Enter number of players (2-4):</label>
+            <input type="number" id="numPlayers" min="2" max="4">
+            <button class="button" onclick="startGame()">Start Game</button>
+        </div>
+
+        <div id="game" class="hidden">
+            <h2>Player <span id="currentPlayer">1</span>'s Turn</h2>
+            <button class="button" onclick="rollDice()">Roll Dice</button>
+            <button class="button" onclick="endTurn()">End Turn</button>
+            <p id="rollResult"></p>
+            <p id="currentScore"></p>
+            <div class="scoreboard" id="scoreboard">
+                <h3>Scoreboard</h3>
+                <ul id="scoreList"></ul>
+            </div>
+        </div>
+
+        <div id="winner" class="hidden">
+            <h2 id="winnerMessage"></h2>
+        </div>
+    </div>
+
+    <script>
+        let players = 0;
+        let scores = [];
+        let currentPlayer = 0;
+        let currentScore = 0;
+        const maxScore = 50;
+
+        function startGame() {
+            players = parseInt(document.getElementById('numPlayers').value);
+            if (isNaN(players) || players < 2 || players > 4) {
+                alert('Please enter a valid number of players (2-4).');
+                return;
+            }
+
+            scores = Array(players).fill(0);
+            currentPlayer = 0;
+            currentScore = 0;
+
+            document.getElementById('setup').classList.add('hidden');
+            document.getElementById('game').classList.remove('hidden');
+            updateScoreboard();
+        }
+
+        function rollDice() {
+            const value = Math.floor(Math.random() * 6) + 1;
+            document.getElementById('rollResult').textContent = `You rolled: ${value}`;
+
+            if (value === 1) {
+                currentScore = 0;
+                alert('You rolled a 1! Turn over.');
+                endTurn();
+            } else {
+                currentScore += value;
+                document.getElementById('currentScore').textContent = `Current Score: ${currentScore}`;
+            }
+        }
+
+        function endTurn() {
+            scores[currentPlayer] += currentScore;
+            if (scores[currentPlayer] >= maxScore) {
+                document.getElementById('game').classList.add('hidden');
+                document.getElementById('winner').classList.remove('hidden');
+                document.getElementById('winnerMessage').textContent = `Player ${currentPlayer + 1} wins!`;
+                return;
+            }
+
+            currentPlayer = (currentPlayer + 1) % players;
+            currentScore = 0;
+            document.getElementById('currentPlayer').textContent = currentPlayer + 1;
+            document.getElementById('rollResult').textContent = '';
+            document.getElementById('currentScore').textContent = '';
+            updateScoreboard();
+        }
+
+        function updateScoreboard() {
+            const scoreList = document.getElementById('scoreList');
+            scoreList.innerHTML = '';
+            scores.forEach((score, index) => {
+                const li = document.createElement('li');
+                li.textContent = `Player ${index + 1}: ${score}`;
+                scoreList.appendChild(li);
+            });
+        }
+    </script>
+</body>
+</html>
